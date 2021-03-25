@@ -1,0 +1,21 @@
+// initialize dexie
+// create the object store and the version of that store
+// the needed values for the object store is added when created.
+// the id will be auto increamented by dexie
+
+// useLiveQuery is a dexie-react-hook function, it allows us to:
+// 1. to get data from the items object store and watch for changes.
+// 2. allItems variable will be updated when there is a change to the item object store.
+// 3. the component will then re-render the new data.
+
+// the useLiveQuery hook expects a function and an array of its dependencies(if any).
+// in this case, we are accessing the data from our items object store and converting to an array.
+// if unavailable or still loading, then return null.
+
+// the add() is used to add values to the created object store
+
+// the delete() is used to remove a particular key/id from the object store
+
+//the update() edits a particular key/id value in the object store
+// update() method expects the item’s primary key as its first argument and the new object data as its second argument.
+// Question: what happens when i want to edit a range of ids value.
