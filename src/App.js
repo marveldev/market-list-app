@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import { useLiveQuery } from 'dexie-react-hooks'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 const App = () => {
@@ -8,30 +8,47 @@ const App = () => {
     { items: "++id,name,price,itemHasBeenPurchased" }
   )
 
-  const allItems = useLiveQuery(() => database.items.toArray(), [])
-  if (!allItems) return null
+  const [allItems, setAllItems] = useState()
+
+  useEffect(() => database.items.toArray()
+    .then(result => {
+      setAllItems(result)
+    }), [allItems, database.items]
+  )
 
   const addItemToDb = async event => {
     event.preventDefault()
     const name = document.querySelector('.item-name').value
     const price = document.querySelector('.item-price').value
-    await database.items.add({ name, price, itemHasBeenPurchased: false })
+    const itemObject = {
+      name, price, itemHasBeenPurchased: false
+    }
+
+    await database.items.add(itemObject)
+    const newItemList = await database.items.toArray()
+    setAllItems(newItemList)
   }
 
   const removeItemFromDb = async id => {
     await database.items.delete(id)
+    const newItemList = await database.items.toArray()
+    setAllItems(newItemList)
   }
 
   const markAsPurchased = async (id, event) => {
     if (event.target.checked) {
       await database.items.update(id, {itemHasBeenPurchased: true})
+      const newItemList = await database.items.toArray()
+      setAllItems(newItemList)
     }
     else {
       await database.items.update(id, {itemHasBeenPurchased: false})
+      const newItemList = await database.items.toArray()
+      setAllItems(newItemList)
     }
   }
 
-  const itemData = allItems.map(({ id, name, price, itemHasBeenPurchased }) => (
+  const itemData = allItems?.map(({ id, name, price, itemHasBeenPurchased }) => (
     <div className="row" key={id}>
       <p className="col s5">
         <label>
@@ -58,7 +75,7 @@ const App = () => {
         <input type="number" className="item-price" placeholder="Price in USD" required />
         <button type="submit" className="waves-effect waves-light btn right">Add item</button>
       </form>
-      {allItems.length > 0 &&
+      {allItems?.length > 0 &&
         <div className="card white darken-1">
           <div className="card-content">
             <form action="#">
